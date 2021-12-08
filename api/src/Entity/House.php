@@ -7,7 +7,11 @@ use App\Repository\HouseRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HouseRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations: ['get', 'post'],
+    itemOperations: ['get', 'put','delete'],
+
+)]
 class House
 {
     #[ORM\Id]
