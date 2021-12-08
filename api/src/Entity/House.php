@@ -2,16 +2,18 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\HouseRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HouseRepository::class)]
 #[ApiResource(
     collectionOperations: ['get', 'post'],
-    itemOperations: ['get', 'put','delete'],
-
+    itemOperations: ['get', 'put', 'delete'],
 )]
+#[ApiFilter(SearchFilter::class, properties: ['name' => 'partial'])]
 class House
 {
     #[ORM\Id]
