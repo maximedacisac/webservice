@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\HouseRepository;
 use Doctrine\ORM\Mapping as ORM;
+
 
 #[ORM\Entity(repositoryClass: HouseRepository::class)]
 #[ApiResource(
@@ -14,6 +17,8 @@ use Doctrine\ORM\Mapping as ORM;
     itemOperations: ['get', 'put', 'delete'],
 )]
 #[ApiFilter(SearchFilter::class, properties: ['name' => 'partial'])]
+#[ApiFilter(DateFilter::class, properties: ['createdDate'])]
+#[ApiFilter(BooleanFilter::class, properties: ['available'])]
 class House
 {
     #[ORM\Id]
@@ -26,6 +31,13 @@ class House
 
     #[ORM\Column(type: 'string', length: 255)]
     private $name;
+
+    #[ORM\Column(type: 'datetime')]
+    #[Gedmo\Timestampable(on: 'create')]
+    private $createdDate;
+
+    #[ORM\Column(type: 'boolean')]
+    private $available;
 
     public function getId(): ?int
     {
@@ -52,6 +64,30 @@ class House
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCreatedDate(): ?\DateTimeInterface
+    {
+        return $this->createdDate;
+    }
+
+    public function setCreatedDate(\DateTimeInterface $createdDate): self
+    {
+        $this->createdDate = $createdDate;
+
+        return $this;
+    }
+
+    public function getAvailable(): ?bool
+    {
+        return $this->available;
+    }
+
+    public function setAvailable(bool $available): self
+    {
+        $this->available = $available;
 
         return $this;
     }
