@@ -8,7 +8,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\GetHouseName;
 use App\Repository\HouseRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -16,15 +18,21 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: HouseRepository::class)]
 #[ApiResource(
     collectionOperations: ['get', 'post'],
-    itemOperations: ['get', 'put', 'delete'],
-    denormalizationContext: ['groups' => ['write']],
-    normalizationContext: ['groups' => ['read']],
+    itemOperations: ['get', 'put', 'delete',
+        'get_name' => [
+            'method' => 'GET',
+            'path' => '/houses/{id}/name',
+            //'normalization_context'=> ['groups' => ['House:read:name']]
+            'controller' => GetHouseName::class
+    ],
+        ],
+    denormalizationContext: ['groups' => ['House:write']],
+    normalizationContext: ['groups' => ['House:read']],
 )]
 #[ApiFilter(SearchFilter::class, properties: ['name' => 'partial'])]
 #[ApiFilter(DateFilter::class, properties: ['createdDate'])]
 #[ApiFilter(BooleanFilter::class, properties: ['available'])]
 #[ApiFilter(OrderFilter::class, properties: ['number'])]
-
 class House
 {
     #[ORM\Id]
@@ -33,21 +41,26 @@ class House
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(["read", "write"])]
+    #[Groups(["House:read", "House:write"])]
     private $number;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(["read", "write"])]
+    //#[Groups(["House:read", "House:write","House:read:name"])]
+    #[Groups(["House:read", "House:write"])]
     private $name;
 
     #[ORM\Column(type: 'datetime')]
-    #[Gedmo\Timestampable(on: 'create')]
-    #[Groups("write")]
+    #[Groups("House:write")]
     private $createdDate;
 
     #[ORM\Column(type: 'boolean')]
-    #[Groups(["read", "write"])]
+    #[Groups(["House:read", "House:write"])]
     private $available;
+
+    private function _construct()
+    {
+        $this->createdDate = new DateTime();
+    }
 
     public function getId(): ?int
     {
