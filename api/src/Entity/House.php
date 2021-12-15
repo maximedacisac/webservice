@@ -9,6 +9,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\GetHouseName;
+use App\Dto\HouseInput;
+use App\Dto\HouseOutput;
 use App\Repository\HouseRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
@@ -25,9 +27,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
             //'normalization_context'=> ['groups' => ['House:read:name']]
             'controller' => GetHouseName::class
     ],
+
         ],
     denormalizationContext: ['groups' => ['House:write']],
-    normalizationContext: ['groups' => ['House:read']],
+    input: HouseInput::class,
+    //normalizationContext: ['groups' => ['House:read']],
+    output: HouseOutput::class
 )]
 #[ApiFilter(SearchFilter::class, properties: ['name' => 'partial'])]
 #[ApiFilter(DateFilter::class, properties: ['createdDate'])]
